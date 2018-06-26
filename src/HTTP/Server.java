@@ -27,12 +27,6 @@ public class Server {
 	public static int requestLength = -1;
 	public static int serverCount = 0;
 	public static char[] cbuf = new char[8000];
-
-	public static void sendResponse(byte[] response, DataOutputStream dout) throws IOException
-	{
-		dout.write(response);
-		dout.flush();
-	}
 	
 	
 	public static void main(String args[]) throws IOException, InterruptedException
@@ -46,6 +40,7 @@ public class Server {
 			System.out.println("accepted: "+socket.getInetAddress()+":"+socket.getPort());
             DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
+			
 			while(!br.ready());
 			request = "";
 			requestLength = br.read(cbuf);
@@ -53,11 +48,18 @@ public class Server {
 			response = HTTP.requestHandler.responseGenerator(request);
 			sendResponse(response, dout);
 			System.out.println("Response sent");
+			
 			br.close();
 			dout.close();
 			socket.close();
 			server.close();
 			System.out.println("Server closed\n");
 		}
+	}
+	
+	public static void sendResponse(byte[] response, DataOutputStream dout) throws IOException
+	{
+		dout.write(response);
+		dout.flush();
 	}
 }

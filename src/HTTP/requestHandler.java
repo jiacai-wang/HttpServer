@@ -6,9 +6,15 @@ import java.util.Scanner;
 public class requestHandler {
 	public static byte[] responseGenerator(String request) throws IOException
 	{
-		request = java.net.URLDecoder.decode(request, "UTF-8");
-		byte[] response;
+		request = java.net.URLDecoder.decode(request, "UTF-8");				//将url编码的字符串转为UTF-8编码
+		
 		String[] parsedRequest=new String[4];
+		//字符串数组 parsedRequest[4]分别用于存放
+		//[0]: method（ie. GET, POST, CONNECT ...）
+		//[1]: 资源路径(含get的?foo1=bar1&foo2=bar2字段)
+		//[2]: 接受的响应类型(ie. text/html, image/jpeg ...)
+		//[3]: body内容
+		
 		Scanner scanner=new Scanner(String.valueOf(request));
 		String line=scanner.nextLine();
 		parsedRequest[0]=line.split(" ")[0];
@@ -25,9 +31,7 @@ public class requestHandler {
 			parsedRequest[3]=parsedRequest[3]+line+"\r\n";
 		}
 		scanner.close();
-		response = HTTP.responseHandler.getResponse(parsedRequest);
-		return response;
 		
-		
+		return HTTP.responseHandler.getResponse(parsedRequest);			//调用getRespons方法获取response
 	}
 }
