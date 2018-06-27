@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +24,7 @@ public class responseHandler {
 		String urlHeader = "C:/Users/15761/Desktop/HTTP";		//服务器根目录
 		String responseHeader = "Content-Type: ";		//响应类型
 		String get = new String();
+		String body = new String();
 		String extension = new String();
 		
 		if(parsedRequest[1].indexOf('?')>-1)		//从url分离出get请求
@@ -32,11 +34,13 @@ public class responseHandler {
 		}
 		
 		if(parsedRequest[1].endsWith("/")) parsedRequest[1]+="index.html";			//自动补全默认页index.html
+		body = parsedRequest[3];
 		
 		//控制台调试信息
 		System.out.println("method: "+parsedRequest[0]+"\nurl: "+parsedRequest[1]);
 		System.out.println("get: " + get);
 		System.out.println("Accept: "+parsedRequest[2]+"\nbody: "+parsedRequest[3]);
+		
 		
 		//判断请求文件是否存在并补全响应头的状态码，ie. 200 OK, 404 NotFound ...
 		File requestedFile = new File( urlHeader + parsedRequest[1]);
@@ -53,14 +57,17 @@ public class responseHandler {
 		
 		response = getResponseByteArray(requestedFile.toPath(), responseStartLine, responseHeader);
 		//若响应为html页面，打印到控制台
-		if(getMIMEType(extension).indexOf("text")>-1)System.out.println(new String(response, "UTF-8"));
-		response = getHandler(response, get);
+		//if(getMIMEType(extension).indexOf("text")>-1)System.out.println(new String(response, "UTF-8"));
+		
+		//处理get和post请求改变页面内容 /*并实现数据库查询功能*/
+		if(!get.isEmpty()) response = getHandler(response, get);
+		if(!body.isEmpty()) response = postHandler(response, body);
 		
 		return response;
 	}
 
-	
-	
+
+
 
 	private static String getMIMEType(String extension) {
 		String MIMEType = new String();
@@ -101,12 +108,57 @@ public class responseHandler {
 		return response;
 	}
 
-	private static byte[] getHandler(byte[] response, String get) {
-		//TODO: 处理get请求
+	private static byte[] getHandler(byte[] response, String get) throws UnsupportedEncodingException {
+		//处理get请求
+		String temp = new String(response, "UTF-8");
+		String name = new String("null");
+		String id = new String("null");
+
+		//获取get请求内的name和/或id字段值
+		
+		for(int i=0;i<get.split("&").length;i++)
+		{
+			if(get.split("&")[i].trim().startsWith("name")&&!get.split("&")[i].trim().endsWith("=")) name = get.split("&")[i].split("=")[1];
+			if(get.split("&")[i].trim().startsWith("id")&&!get.split("&")[i].trim().endsWith("=")) id = get.split("&")[i].split("=")[1];
+		}
+
+		//System.out.println("name: "+name+"\nid: "+id);
+		
+		//替换静态页面内的"__name__"字符串为name值，"__id__"字符串为id值
+		temp = temp.replaceAll("__name__", name);
+		temp = temp.replaceAll("__id__", id);
+		
+		//字符串转为待发送的字节数组
+		response = temp.getBytes("UTF-8");
 		
 		return response;
-		
 	}
+	
+	private static byte[] postHandler(byte[] response, String body) throws UnsupportedEncodingException {
+		//处理post请求
+		String temp = new String(response, "UTF-8");
+		String name = new String("null");
+		String id = new String("null");
+		
+		//获取post请求内的name和/或id字段值
+		for(int i=0;i<body.split("&").length;i++)
+		{
+			if(body.split("&")[i].trim().startsWith("name")&&!body.split("&")[i].trim().endsWith("=")) name = body.split("&")[i].split("=")[1];
+			if(body.split("&")[i].trim().startsWith("id")&&!body.split("&")[i].trim().endsWith("=")) id = body.split("&")[i].split("=")[1];
+		}
+		
+		//System.out.println("name: "+name+"\nid: "+id);
+		
+		//替换静态页面内的"__name__"字符串为name值，"__id__"字符串为id值
+		temp = temp.replaceAll("__name__", name);
+		temp = temp.replaceAll("__id__", id);
+		
+		//字符串转为待发送的字节数组
+		response = temp.getBytes("UTF-8");
+		
+		return response;
+	}
+	
 }
 
 
