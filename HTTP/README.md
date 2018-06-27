@@ -1,0 +1,3 @@
+此文件夹应与src/responseHandler.java源码内的urlHeader指向的路径对应，mime.txt文件路径应与getMIMEType函数请求的文件路径对应。
+
+
