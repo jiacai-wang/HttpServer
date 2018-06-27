@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <title>课设</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+        li { 
+            float:left;
+            width: 33%;
+        }
+        form {
+            
+        }
+        </style>
+</head>
+
+<body style="margin-left: 1cm; margin-right: 1cm; margin-top: 0.5cm" >
+    <div style="text-align:center">  
+        <img src="/logo.png" alt="长春理工大学logo" width="50%" >
+    </div>
+    
+    <ul>
+        <li><h2>get:</h2>
+            <p>输入姓名以查询你的学号</p>
+            <form action="/get.html" method="get">
+                <label>姓名: </label> <input type="text" name="name">
+                <br>
+                <input type="submit" value="提交">
+                <br>
+            </form>
+        </li>
+        
+        <li><h2>post:</h2>
+            <p>以下输入的信息将录入数据库</p>
+            <form action="/post.html" method="post">
+                <label>姓名: </label> <input type="text" name="name">
+                <br>
+                <label>学号: </label> <input type="text" name="id">
+                <br>
+                <input type="submit" value="提交">
+                <br>
+            </form>
+        </li>
+        
+        <li><h2>sql:</h2>
+            <p>输入以匹配所有学生信息</p>
+            <form action="/sql.html" method="get">
+                <label>学号: </label> <input type="text" name="id">
+                <br>
+                <input type="submit" value="提交">
+                <br>
+            </form>
+        </li>
+    </ul>
+</body>
+</html>
