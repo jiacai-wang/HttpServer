@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.*;
 
 
 
@@ -56,7 +57,9 @@ public class responseHandler {
 		
 		//处理get和post请求改变页面内容 /*并实现数据库查询功能*/
 		if(!get.isEmpty()) response = getHandler(response, get);
+//		response = getHandler(response, get);
 		if(!body.isEmpty()) response = postHandler(response, body);
+//		response = postHandler(response, body);
 		
 		return response;
 	}
@@ -108,33 +111,40 @@ public class responseHandler {
 		String temp = new String(response, "UTF-8");
 		String name = new String("null");
 		String id = new String("null");
-
-		//获取get请求内的name和/或id字段值
+		String SQLResult = new String();
 		
+		
+		//获取get请求内的name和/或id字段值
 		for(int i=0;i<get.split("&").length;i++)
 		{
 			if(get.split("&")[i].trim().startsWith("name")&&!get.split("&")[i].trim().endsWith("=")) name = get.split("&")[i].split("=")[1];
 			if(get.split("&")[i].trim().startsWith("id")&&!get.split("&")[i].trim().endsWith("=")) id = get.split("&")[i].split("=")[1];
 		}
 
+		SQLResult = SQLHandler(name, id);
 		//System.out.println("name: "+name+"\nid: "+id);
 		
 		//替换静态页面内的"__name__"字符串为name值，"__id__"字符串为id值
 		temp = temp.replaceAll("__name__", name);
 		temp = temp.replaceAll("__id__", id);
-		
+		temp = temp.replaceAll("__SQL__", SQLResult);
 		//字符串转为待发送的字节数组
 		response = temp.getBytes("UTF-8");
 		
 		return response;
 	}
 	
+
+
+
+
 	private static byte[] postHandler(byte[] response, String body) throws UnsupportedEncodingException {
 		//处理post请求
 		String temp = new String(response, "UTF-8");
 		String name = new String("null");
 		String id = new String("null");
-		
+		String SQLResult = new String();
+
 		//获取post请求内的name和/或id字段值
 		for(int i=0;i<body.split("&").length;i++)
 		{
@@ -142,17 +152,114 @@ public class responseHandler {
 			if(body.split("&")[i].trim().startsWith("id")&&!body.split("&")[i].trim().endsWith("=")) id = body.split("&")[i].split("=")[1];
 		}
 		
+
+		SQLResult = SQLHandler(name, id);
+
 		//System.out.println("name: "+name+"\nid: "+id);
 		
 		//替换静态页面内的"__name__"字符串为name值，"__id__"字符串为id值
 		temp = temp.replaceAll("__name__", name);
 		temp = temp.replaceAll("__id__", id);
-		
+		temp = temp.replaceAll("__SQL__", SQLResult);
 		//字符串转为待发送的字节数组
 		response = temp.getBytes("UTF-8");
 		
 		return response;
 	}
+	
+	private static String SQLHandler(String name, String id) {
+		String result = new String();
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    if(!name.contains("null")&&id.contains("null"))			//仅有name信息，查询name对应学号
+	    {
+		    try {
+		        Class.forName("org.sqlite.JDBC");
+		        c = DriverManager.getConnection("jdbc:sqlite:C:/Users/15761/Desktop/HTTP/student.db");
+		        c.setAutoCommit(false);
+		        System.out.println("Opened database successfully");
+	
+		        stmt = c.createStatement();
+		        String sql = new String();
+		        sql = "select * from student where name =\""+name+"\";";
+		        ResultSet rs = stmt.executeQuery(sql);
+		        while(rs.next())
+		        {
+		        	result = result + rs.getString("id") + "<br>";
+		        }
+		        stmt.close();
+		        c.close();
+		      } catch ( Exception e ) {
+		        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		        System.exit(0);
+		      }
+	    }
+	    
+	    if(name.contains("null")&&!id.contains("null"))		//仅有id信息，查询包含id的所有记录
+	    {
+
+		    try {
+		        Class.forName("org.sqlite.JDBC");
+		        c = DriverManager.getConnection("jdbc:sqlite:C:/Users/15761/Desktop/HTTP/student.db");
+		        c.setAutoCommit(false);
+		        System.out.println("Opened database successfully");
+	
+		        stmt = c.createStatement();
+		        String sql = new String();
+		        sql = "select * from student where id like\"%" + id + "%\";";
+		        ResultSet rs = stmt.executeQuery(sql);
+		        while(rs.next())
+		        {
+		        	result = result + "<br>" + rs.getString("name") + ": " + rs.getString("id");
+		        }
+		        stmt.close();
+		        c.close();
+		      } catch ( Exception e ) {
+		        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		        System.exit(0);
+		      }
+	    }
+	    
+	    if(!name.contains("null")&&!id.contains("null"))		//同时有name和id信息，判断是否已存在，并执行insert语句
+	    {
+	    	System.out.println("name: "+name+" id: "+id);
+	    	 try {
+			        Class.forName("org.sqlite.JDBC");
+			        c = DriverManager.getConnection("jdbc:sqlite:C:/Users/15761/Desktop/HTTP/student.db");
+			        c.setAutoCommit(false);
+			        System.out.println("Opened database successfully");
+		
+			        stmt = c.createStatement();
+			        String sql = new String();
+			        sql = "select * from student where id =\"" + id + "\";";
+			        ResultSet rs = stmt.executeQuery(sql);
+			        if(rs.next())
+			        {
+			        	result = "数据库写入失败，已存在如下信息：<br>" + rs.getString("name") + ": " + rs.getString("id");
+			        }
+			        else
+			        {
+			        	System.out.println("now inserting");
+			        	sql = "insert into student(id,name) values(\"" + id + "\",\"" + name + "\");";
+			        	stmt.executeUpdate(sql);
+			        	result = "您的信息已被记录";
+			        	c.commit();
+			        }
+			        stmt.close();
+			        c.close();
+			      } catch ( Exception e ) {
+			        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			        System.exit(0);
+			      }
+	    }
+	    
+	    if(name.contains("null")&&id.contains("null")) result = "您未输入信息";		//name和id同为空，给出提示
+	    
+	    
+		return result;
+	}
+
 	
 }
 
