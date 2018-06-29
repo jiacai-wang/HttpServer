@@ -1,3 +1,12 @@
+/*
+ * 0，监听80端口，获取套接字输入输出流
+ * 1，从输入流获取请求，调用HTTP.requestHandler.responseGenerator(request)获取响应
+ * 2，通过套接字输出流发送响应
+ * 3，关闭服务器套接字
+ * 4，回到0
+ */
+
+
 package HTTP;
 
 import java.io.BufferedReader;
@@ -27,11 +36,12 @@ public class Server {
 			ServerSocket server = new ServerSocket(port);
 			System.out.println("Server "+(++serverCount)+" now listening on port "+ port);
 			Socket socket = server.accept();
-			System.out.println("accepted: "+socket.getInetAddress()+":"+socket.getPort());
+			System.out.println("accepted connecting from: "+socket.getInetAddress()+":"+socket.getPort());
+			
             DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
 			
-			while(!br.ready());
+			while(!br.ready()) ;		//无请求时阻塞
 			request = "";
 			requestLength = br.read(cbuf);
 			request = String.copyValueOf(cbuf, 0, requestLength);
