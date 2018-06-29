@@ -22,8 +22,8 @@
     </div>
     
     <ul>
-        <li><h2>get:</h2>
-            <p>输入姓名以查询你的学号</p>
+        <li><h2>GET:</h2>
+            <p>输入姓名以查询学号(全字匹配)</p>
             <form action="/get.html" method="get">
                 <label>姓名: </label> <input type="text" name="name">
                 <br>
@@ -32,8 +32,8 @@
             </form>
         </li>
         
-        <li><h2>post:</h2>
-            <p>以下输入的信息将录入数据库</p>
+        <li><h2>POST:</h2>
+            <p>以下输入的信息将录入数据库(学号唯一)</p>
             <form action="/post.html" method="post">
                 <label>姓名: </label> <input type="text" name="name">
                 <br>
@@ -44,8 +44,8 @@
             </form>
         </li>
         
-        <li><h2>sql:</h2>
-            <p>输入以匹配所有学生信息</p>
+        <li><h2>SQL:</h2>
+            <p>输入部分学号以检索信息(部分匹配)</p>
             <form action="/sql.html" method="get">
                 <label>学号: </label> <input type="text" name="id">
                 <br>
