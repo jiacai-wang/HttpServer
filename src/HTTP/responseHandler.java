@@ -232,7 +232,7 @@ public class responseHandler {
 		
 			        stmt = c.createStatement();
 			        String sql = new String();
-			        sql = "select * from student where id like\"%" + id + "%\";";
+			        sql = "select * from student where id like\"%" + id + "%\" order by id;";
 			        ResultSet rs = stmt.executeQuery(sql);
 			        while(rs.next())
 			        {
