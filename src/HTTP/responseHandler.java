@@ -30,7 +30,7 @@ public class responseHandler {
 	{
 		byte[] response;
 		String responseStartLine = "HTTP/1.1 ";				//固定响应头
-		String urlHeader = "C:/Users/15761/Desktop/HTTP";			//服务器根目录
+		String urlHeader = "./HTTP";			//服务器根目录
 		String responseHeader = "Content-Type: ";			//响应类型
 		String get = new String();
 		String body = new String();
@@ -84,7 +84,7 @@ public class responseHandler {
 	//查找mime文件中后缀名对应的MIMEType
 	private static String getMIMEType(String extension) {
 		String MIMEType = new String();
-		try (InputStream in = Files.newInputStream((new File("C:/Users/15761/Desktop/HTTP/mime.txt")).toPath());
+		try (InputStream in = Files.newInputStream((new File("./HTTP/mime.txt")).toPath());
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in,"UTF-8")))
 		{
 		    String line = null;
@@ -130,8 +130,8 @@ public class responseHandler {
 		//获取get请求内的name和/或id字段值
 		for(int i=0;i<get.split("&").length;i++)
 		{
-			if(get.split("&")[i].trim().startsWith("name")&&!get.split("&")[i].trim().endsWith("=")) name = get.split("&")[i].split("=")[1];
-			if(get.split("&")[i].trim().startsWith("id")&&!get.split("&")[i].trim().endsWith("=")) id = get.split("&")[i].split("=")[1];
+			if(get.split("&")[i].trim().startsWith("name")&&!get.split("&")[i].trim().endsWith("=")) name = get.split("&")[i].split("=")[1].trim();
+			if(get.split("&")[i].trim().startsWith("id")&&!get.split("&")[i].trim().endsWith("=")) id = get.split("&")[i].split("=")[1].trim();
 		}
 
 		SQLResult = SQLHandler(name, id, "get");
@@ -158,8 +158,8 @@ public class responseHandler {
 		//获取post请求内的name和/或id字段值
 		for(int i=0;i<body.split("&").length;i++)
 		{
-			if(body.split("&")[i].trim().startsWith("name")&&!body.split("&")[i].trim().endsWith("=")) name = body.split("&")[i].split("=")[1];
-			if(body.split("&")[i].trim().startsWith("id")&&!body.split("&")[i].trim().endsWith("=")) id = body.split("&")[i].split("=")[1];
+			if(body.split("&")[i].trim().startsWith("name")&&!body.split("&")[i].trim().endsWith("=")) name = body.split("&")[i].split("=")[1].trim();
+			if(body.split("&")[i].trim().startsWith("id")&&!body.split("&")[i].trim().endsWith("=")) id = body.split("&")[i].split("=")[1].trim();
 		}
 		
 
@@ -192,7 +192,7 @@ public class responseHandler {
 	    	{
 			    try {
 			        Class.forName("org.sqlite.JDBC");
-			        c = DriverManager.getConnection("jdbc:sqlite:C:/Users/15761/Desktop/HTTP/student.db");
+			        c = DriverManager.getConnection("jdbc:sqlite:./HTTP/student.db");
 			        c.setAutoCommit(false);
 			        System.out.println("Opened database successfully");
 		
@@ -226,7 +226,7 @@ public class responseHandler {
 	    	{
 			    try {
 			        Class.forName("org.sqlite.JDBC");
-			        c = DriverManager.getConnection("jdbc:sqlite:C:/Users/15761/Desktop/HTTP/student.db");
+			        c = DriverManager.getConnection("jdbc:sqlite:./HTTP/student.db");
 			        c.setAutoCommit(false);
 			        System.out.println("Opened database successfully");
 		
@@ -260,7 +260,7 @@ public class responseHandler {
 		    	System.out.println("name: "+name+" id: "+id);
 		    	 try {
 				        Class.forName("org.sqlite.JDBC");
-				        c = DriverManager.getConnection("jdbc:sqlite:C:/Users/15761/Desktop/HTTP/student.db");
+				        c = DriverManager.getConnection("jdbc:sqlite:./HTTP/student.db");
 				        c.setAutoCommit(false);
 				        System.out.println("Opened database successfully");
 			
