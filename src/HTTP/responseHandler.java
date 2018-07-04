@@ -46,9 +46,10 @@ public class responseHandler {
 		body = parsedRequest[3];
 		
 		//控制台调试信息
-		System.out.println("method: "+parsedRequest[0]+"\nurl: "+parsedRequest[1]);
-		System.out.println("get: " + get);
-		System.out.println("Accept: "+parsedRequest[2]+"\nbody: "+parsedRequest[3]);
+//		System.out.println("method: "+parsedRequest[0]+"\nurl: "+parsedRequest[1]);
+//		System.out.println("get: " + get);
+//		System.out.println("body: "+parsedRequest[3]);
+//		System.out.println("Accept: "+parsedRequest[2]+"\nbody: "+parsedRequest[3]);
 		
 		
 		//判断请求文件是否存在并补全响应头的状态码，ie. 200 OK, 404 NotFound ...
@@ -104,7 +105,7 @@ public class responseHandler {
 	private static byte[] getResponseByteArray(Path requestedFilePath, String responseStartLine, String responseHeader)
 	{
 		byte[] response = null;
-		System.out.println("opening file: "+requestedFilePath.toString());
+//		System.out.println("opening file: "+requestedFilePath.toString());
 		byte[] content = null;
 		byte[] header = (responseStartLine + responseHeader +"\r\n\r\n").getBytes();		//响应头和响应内容之间增加空行
 		try {
@@ -177,6 +178,7 @@ public class responseHandler {
 		return response;
 	}
 	
+	
 	//完成数据库操作
 	//这部分代码贼烂
 	private static String SQLHandler(String name, String id, String method)
@@ -184,6 +186,9 @@ public class responseHandler {
 		String result = new String();
 		Connection c = null;
 	    Statement stmt = null;
+	    System.out.println("\n**************************");
+    	System.out.println("method: "+ method.toUpperCase()+ "\nname: "+name+"\nid: "+id);
+	    System.out.println("**************************\n");
 	    
 	    //仅有name信息，查询name对应学号
 	    if(!name.contains("null")&&id.contains("null"))
@@ -194,7 +199,7 @@ public class responseHandler {
 			        Class.forName("org.sqlite.JDBC");
 			        c = DriverManager.getConnection("jdbc:sqlite:./HTTP/student.db");
 			        c.setAutoCommit(false);
-			        System.out.println("Opened database successfully");
+//			        System.out.println("Opened database successfully");
 		
 			        stmt = c.createStatement();
 			        String sql = new String();
@@ -228,7 +233,7 @@ public class responseHandler {
 			        Class.forName("org.sqlite.JDBC");
 			        c = DriverManager.getConnection("jdbc:sqlite:./HTTP/student.db");
 			        c.setAutoCommit(false);
-			        System.out.println("Opened database successfully");
+//			        System.out.println("Opened database successfully");
 		
 			        stmt = c.createStatement();
 			        String sql = new String();
@@ -257,12 +262,11 @@ public class responseHandler {
 	    {
 	    	if(method=="post")		//post合法
 	    	{
-		    	System.out.println("name: "+name+" id: "+id);
 		    	 try {
 				        Class.forName("org.sqlite.JDBC");
 				        c = DriverManager.getConnection("jdbc:sqlite:./HTTP/student.db");
 				        c.setAutoCommit(false);
-				        System.out.println("Opened database successfully");
+//				        System.out.println("Opened database successfully");
 			
 				        stmt = c.createStatement();
 				        String sql = new String();
